@@ -1,0 +1,53 @@
+﻿@page "/"
+@using CrudBlazor.Shared
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NM
+
+<EditForm Model=Osoba OnSubmit=Unos>
+    <i>Ime:</i><InputText @bind-Value=Osoba.Name/><br/>
+    <i>Prezime:</i><InputText @bind-Value=Osoba.Surname/>
+    <button type="submit" class="btn-primary">OK</button>
+</EditForm>
+@if (Osobe.Any())
+{
+    <ul>
+        @foreach (Osoba o in Osobe)
+        {
+            <li>@o.Id @o.Name @o.Surname</li>
+           
+        }
+     </ul>
+}
+
+@code
+{
+    private HubConnection _hc;
+    private Osoba Osoba { get; set; } = new();
+    private List<Osoba> Osobe { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hc = new HubConnectionBuilder()
+           .WithUrl(NM.BaseUri + "osobe")
+           .Build();
+
+        _hc.On<List<Osoba>>("posalji", osobe => Dohvati(osobe));
+
+        await _hc.StartAsync();
+        await _hc.SendAsync("Posalji");
+    }
+
+    private async void Unos()
+    {
+        await _hc.SendAsync("Dodaj", Osoba);
+        await _hc.SendAsync("Posalji");
+        Osoba = new();
+        StateHasChanged();
+    }
+
+    private void Dohvati(List<Osoba> osobe)
+    {
+        Osobe = osobe;
+        StateHasChanged();
+    }
+}
