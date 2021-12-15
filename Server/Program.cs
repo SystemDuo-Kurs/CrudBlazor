@@ -13,9 +13,9 @@ builder.Services.AddDbContext<Db>(o =>
     o.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Teest;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
 });
 builder.Services.AddSignalR();
+builder.Services.AddTransient<IOsobaServis, OsobaServis>();
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

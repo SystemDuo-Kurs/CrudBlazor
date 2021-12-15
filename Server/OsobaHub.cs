@@ -6,24 +6,23 @@ namespace CrudBlazor.Server
     public class OsobaHub : Hub
     {
         private readonly ILogger _logger;
-        private readonly Db _baza;
-        public OsobaHub(Db baza, ILogger<OsobaHub> log)
+        private readonly IOsobaServis _os;
+        public OsobaHub(IOsobaServis os, ILogger<OsobaHub> log)
         {
             _logger = log;
-            _baza = baza;
+            _os = os;
         }
         public void Dodaj(Osoba o)
         {
             _logger.LogInformation($"Od klijenta -- {o.Name} - {o.Surname}");
-            _baza.Add(o);
-            _baza.SaveChanges();
+            _os.Add(o);
         }
 
         public async void Posalji()
         {
             _logger.LogInformation("Klijent hoce gomilu osoba :)");
 
-            await Clients.Caller.SendAsync("posalji", _baza.Osobas.ToList());
+            await Clients.Caller.SendAsync("posalji", _os.GetAll());
         }
     }
 }

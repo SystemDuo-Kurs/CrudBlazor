@@ -8,4 +8,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-await builder.Build().RunAsync();
+builder.Services.AddSingleton<SignalRComms>();
+builder.Services.AddScoped<IOsobaModel, OsobaModel>();
+builder.Services.AddScoped<IOsobaVM, OsobaVM>();
+
+
+
+var app = builder.Build();
+app.Services.GetService<SignalRComms>();
+
+await app.RunAsync();
